@@ -1,0 +1,77 @@
+﻿@model IEnumerable<AdminBlog.Models.Category>
+@{
+    ViewData["Title"] = "Category";
+}
+
+<button type="button" onclick="$('#CategoryModal').modal('show')" class="btn btn-primary">Kategori Ekle</button>
+<br />
+<table class="table table-bordered mt-4">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Kategori Adı</th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.CategoryId</td>
+                <td>@item.Name</td>
+                <td><a class="btn btn-danger" asp-route-id="@item.CategoryId" asp-action="DeleteCategory">Sil</a></td>
+                <td><button type="button" class="btn btn-secondary" onclick="updateForm(@item.CategoryId)">Güncelle</button></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="modal" id="CategoryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">KATEGORİ</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">X</button>
+            </div>
+            <form action="/Home/AddCategory" method="post">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <input id="Id" type="hidden" name="Id" value="" class="form-control" />
+                        <input id="Name" type="text" name="Name" placeholder="kategori adı" class="form-control" autocomplete="off"  />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="clearForm()" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+                    <button id="saveBtn" type="submit" class="btn btn-primary">Değişiklikleri Kaydet</button>
+                    <button id="updateBtn" type="submit" class="btn btn-primary">Güncelle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts{ 
+    <script>
+        $(() => clearForm());
+        function updateForm(Id) {
+            fetch("/Home/CategoryDetails?Id=" + Id)
+                .then(res => res.json())
+                .then(res => {
+                    $('#Id').val(res.id);
+                    $('#Name').val(res.name);
+                })
+            $('#saveBtn').hide();
+            $('#updateBtn').show();
+            $('#CategoryModal').modal('show');
+        }
+
+        function clearForm() {
+            $('#Id').val(null);
+            $('#Name').val(null);
+
+            $('#saveBtn').show();
+            $('#updateBtn').hide();
+        }
+    </script>
+}
